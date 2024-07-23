@@ -64,27 +64,41 @@ bool remember_last_key_user(uint16_t keycode, keyrecord_t *record, uint8_t *reme
     return keycode != K_MREP && keycode != K_MAREP; // must not remember the magic key itself
 }
 
-bool allow_repeat = true;
+bool repeat_preseed = false;
+bool alt_repeat_preseed = false;
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
-        //TODO: figure out how to get this to work
         case K_MREP:
-            if (allow_repeat && record->tap.count && record->event.pressed) {
-                allow_repeat = false;
+            if (!repeat_preseed && record->tap.count && record->event.pressed) {
                 if (get_repeat_key_count()) {
                     return true;
                 }
+                repeat_preseed = true;
+                repeat_key_invoke(&record->event);
+                return false;        // Return false to ignore further processing of key
+            } else if (repeat_preseed && record->tap.count && record->event.pressed == false)  {
+                if (get_repeat_key_count()) {
+                    return true;
+                }
+                repeat_preseed = false;
                 repeat_key_invoke(&record->event);
                 return false;        // Return false to ignore further processing of key
             }
             break;
         case K_MAREP:
-            if (record->tap.count == 1 && record->event.pressed) {
-                // can't send the quantuum key so we do this manually
+            if (!alt_repeat_preseed && record->tap.count && record->event.pressed) {
                 if (get_repeat_key_count()) {
                     return true;
                 }
+                alt_repeat_preseed = true;
+                alt_repeat_key_invoke(&record->event);
+                return false;        // Return false to ignore further processing of key
+            } else if (alt_repeat_preseed && record->tap.count && record->event.pressed == false)  {
+                if (get_repeat_key_count()) {
+                    return true;
+                }
+                alt_repeat_preseed = false;
                 alt_repeat_key_invoke(&record->event);
                 return false;        // Return false to ignore further processing of key
             }
