@@ -24,7 +24,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      KC_LSFT,   KC_A,    KC_S,   KC_D, LCTL_T(KC_F), KC_G,                            KC_H, RCTL_T(KC_J), KC_K, RALT_T(KC_L), KC_SCLN, KC_QUOT,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     K_MREP,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,   KC_LGUI,     LT(_NAV,KC_ESC), KC_N,  KC_M,   KC_COMM, KC_DOT,  KC_SLSH, QK_LEAD,
+     K_MAREP,   KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,   KC_LGUI,     LT(_NAV,KC_ESC), KC_N,  KC_M,   KC_COMM, KC_DOT,  KC_SLSH, QK_LEAD,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
                                      KC_F12, TT(_NAV), KC_SPC,               RSFT_T(KC_ENT), KC_BSPC, KC_RALT
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
@@ -38,7 +38,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      KC_TRNS,  KC_WH_U, KC_MS_L, KC_MS_D, KC_MS_R, KC_WH_D,                            KC_HOME, KC_LEFT, KC_DOWN, KC_RGHT,  KC_END, KC_TRNS,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-    K_MAREP, KC_LALT, KC_ACL0, KC_ACL1, KC_ACL2, TT(_UTIL), KC_TRNS,         KC_TRNS, KC_DEL,  KC_BTN1, KC_BTN3,  KC_BTN2, KC_BSLS, KC_TRNS,
+    K_MREP,  KC_LALT, KC_ACL0, KC_ACL1, KC_ACL2, TT(_UTIL), KC_TRNS,         KC_TRNS, KC_DEL,  KC_BTN1, KC_BTN3,  KC_BTN2, KC_BSLS, KC_TRNS,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
                                  TO(_QWERTY), KC_TRNS, KC_TRNS,                   KC_TRNS, KC_TRNS, KC_TRNS
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
@@ -178,6 +178,12 @@ void leader_end_user(void) {
     } else if (leader_sequence_one_key(KC_F12)) {
         // Leader, f12 => find all references
         SEND_STRING(SS_LALT(SS_LSFT(SS_TAP(X_F12))));
+    } else if (leader_sequence_two_keys(KC_K, KC_C)) {
+        // Leader, k, c => comment out block
+        SEND_STRING(SS_LCTL("kc"));
+    } else if (leader_sequence_two_keys(KC_K, KC_U)) {
+        // Leader, k, u => uncomment block
+        SEND_STRING(SS_LCTL("ku"));
     } else if (leader_sequence_one_key(KC_SPC)) {
         // Leader, SPACE => base layer
         layer_move(_QWERTY);
