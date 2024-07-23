@@ -7,6 +7,34 @@
 #define K_MREP LCTL_T(QK_REP)
 #define K_MAREP LCTL_T(QK_AREP)
 
+typedef enum {
+    TD_NONE,
+    TD_UNKNOWN,
+    TD_SINGLE_TAP,
+    TD_SINGLE_HOLD,
+    TD_DOUBLE_TAP,
+    TD_DOUBLE_HOLD,
+    TD_DOUBLE_SINGLE_TAP, // Send two single taps
+    TD_TRIPLE_TAP,
+    TD_TRIPLE_HOLD
+} td_state_t;
+
+typedef struct {
+    bool is_press_action;
+    td_state_t state;
+} td_tap_t;
+
+td_state_t cur_dance(tap_dance_state_t *state);
+
+// For the x tap dance. Put it here so it can be used in any keymap
+void x_finished(tap_dance_state_t *state, void *user_data);
+void x_reset(tap_dance_state_t *state, void *user_data);
+
+// Tap Dance declarations
+enum {
+    TD_X_MO,
+};
+
 
 enum layers {
      _QWERTY,
@@ -26,7 +54,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      K_MAREP,   KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,   KC_LGUI,     LT(_NAV,KC_ESC), KC_N,  KC_M,   KC_COMM, KC_DOT,  KC_SLSH, QK_LEAD,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
-                                     KC_F12, TT(_NAV), KC_SPC,               RSFT_T(KC_ENT), KC_BSPC, KC_RALT
+                                   KC_F12, TD(TD_X_MO), KC_SPC,               RSFT_T(KC_ENT), KC_BSPC, KC_RALT
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
   ),
 
@@ -40,7 +68,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
     K_MREP,  KC_LALT, KC_ACL0, KC_ACL1, KC_ACL2, TT(_UTIL), KC_TRNS,         KC_TRNS, KC_DEL,  KC_BTN1, KC_BTN3,  KC_BTN2, KC_BSLS, KC_TRNS,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
-                                 TO(_QWERTY), KC_TRNS, KC_TRNS,                   KC_TRNS, KC_TRNS, KC_TRNS
+                                     KC_F12, KC_TRNS, KC_TRNS,                    KC_TRNS, KC_TRNS, KC_TRNS
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
   ),
 
@@ -54,14 +82,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      EE_CLR,  KC_LALT,  KC_NO,   KC_NO,   KC_NO,   KC_TRNS, KC_TRNS,          KC_ESC,  KC_PDOT,  KC_1,    KC_2,    KC_3,   KC_BSPC, KC_TRNS,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
-                                TO(_QWERTY), TO(_NAV), KC_TRNS,                   KC_TRNS,   KC_0,  KC_TRNS
+                                     KC_F12, KC_TRNS, KC_TRNS,                   KC_TRNS,  KC_0,   KC_TRNS
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
   )
 };
 
 
 bool remember_last_key_user(uint16_t keycode, keyrecord_t *record, uint8_t *remembered_mods) {
-    return keycode != K_MREP && keycode != K_MAREP; // must not remember the magic key itself
+    return keycode != K_MREP && keycode != K_MAREP && keycode != TD(TD_X_MO); // must not remember the magic key itself
 }
 
 bool repeat_preseed = false;
@@ -128,6 +156,8 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
             return 260;
         case LT(_NAV,KC_ESC):
             return 180;
+        case TD(TD_X_MO):
+            return 300;
         default:
             return TAPPING_TERM;
     }
@@ -196,3 +226,61 @@ void leader_end_user(void) {
         layer_on(_UTIL);
     }
 }
+
+td_state_t cur_dance(tap_dance_state_t *state) {
+    if (state->count == 1) {
+        if (!state->pressed) return TD_SINGLE_TAP;
+        // Key has not been interrupted, but the key is still held. Means you want to send a 'HOLD'.
+        else return TD_SINGLE_HOLD;
+    } else if (state->count == 2) {
+        return TD_DOUBLE_TAP;
+    }
+
+    // Assumes no one is trying to type the same letter three times (at least not quickly).
+    // If your tap dance key is 'KC_W', and you want to type "www." quickly - then you will need to add
+    // an exception here to return a 'TD_TRIPLE_SINGLE_TAP', and define that enum just like 'TD_DOUBLE_SINGLE_TAP'
+    if (state->count == 3) {
+        return TD_TRIPLE_TAP;
+    } else return TD_UNKNOWN;
+}
+
+// Create an instance of 'td_tap_t' for the 'x' tap dance.
+static td_tap_t xtap_state = {
+    .is_press_action = true,
+    .state = TD_NONE
+};
+
+void x_finished(tap_dance_state_t *state, void *user_data) {
+    xtap_state.state = cur_dance(state);
+    switch (xtap_state.state) {
+        case TD_SINGLE_HOLD:
+            layer_on(_NAV);
+            break;
+        case TD_SINGLE_TAP:
+            layer_move(_QWERTY);
+            break;
+        case TD_DOUBLE_TAP:
+            layer_move(_NAV);
+            break;
+        case TD_TRIPLE_TAP:
+            layer_on(_NAV);
+            layer_on(_UTIL);
+            break;
+        default:
+            break;
+    }
+}
+
+void x_reset(tap_dance_state_t *state, void *user_data) {
+    switch (xtap_state.state) {
+        case TD_SINGLE_HOLD:
+            layer_off(_NAV);
+            break;
+        default: break;
+    }
+    xtap_state.state = TD_NONE;
+}
+
+tap_dance_action_t tap_dance_actions[] = {
+    [TD_X_MO] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, x_finished, x_reset)
+};
