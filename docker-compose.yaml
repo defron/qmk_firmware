@@ -1,0 +1,16 @@
+version: "3"
+services:
+    qmk:
+        stdin_open: true
+        tty: true
+        container_name: qmkfirmware
+        user: "1000:1001"
+        volumes:
+            - .:/qmk_firmware:z
+            - /dev:/dev
+        image: ghcr.io/qmk/qmk_cli
+        environment:
+            - SKIP_GIT=true
+            - SKIP_VERSION=true
+        working_dir: /qmk_firmware
+        command: tee
