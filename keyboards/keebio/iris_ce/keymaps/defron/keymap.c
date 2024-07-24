@@ -94,6 +94,7 @@ bool remember_last_key_user(uint16_t keycode, keyrecord_t *record, uint8_t *reme
 
 bool repeat_preseed = false;
 bool alt_repeat_preseed = false;
+uint8_t previous_layer = 0;
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
@@ -158,6 +159,8 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
             return 180;
         case TD(TD_X_MO):
             return 300;
+        case KC_LSFT:
+            return 250;
         default:
             return TAPPING_TERM;
     }
@@ -252,9 +255,15 @@ static td_tap_t xtap_state = {
 
 void x_finished(tap_dance_state_t *state, void *user_data) {
     xtap_state.state = cur_dance(state);
+    uint8_t curr_layer = get_highest_layer(layer_state);
     switch (xtap_state.state) {
         case TD_SINGLE_HOLD:
-            layer_on(_NAV);
+            previous_layer = curr_layer;
+            if(curr_layer == _QWERTY) {
+                layer_move(_NAV);
+            } else {
+                layer_move(_QWERTY);
+            }
             break;
         case TD_SINGLE_TAP:
             layer_move(_QWERTY);
@@ -274,7 +283,10 @@ void x_finished(tap_dance_state_t *state, void *user_data) {
 void x_reset(tap_dance_state_t *state, void *user_data) {
     switch (xtap_state.state) {
         case TD_SINGLE_HOLD:
-            layer_off(_NAV);
+            layer_move(previous_layer);
+            if (previous_layer == _UTIL) {
+                layer_on(_NAV);
+            }
             break;
         default: break;
     }
@@ -284,3 +296,24 @@ void x_reset(tap_dance_state_t *state, void *user_data) {
 tap_dance_action_t tap_dance_actions[] = {
     [TD_X_MO] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, x_finished, x_reset)
 };
+
+bool caps_word_press_user(uint16_t keycode) {
+    switch (keycode) {
+        // Keycodes that continue Caps Word, with shift applied.
+        case KC_A ... KC_Z:
+        case KC_MINS:
+            add_weak_mods(MOD_BIT(KC_LSFT));  // Apply shift to next key.
+            return true;
+
+        // Keycodes that continue Caps Word, without shifting.
+        case KC_1 ... KC_0:
+        case KC_BSPC:
+        case KC_DEL:
+        case KC_UNDS:
+        case TD(TD_X_MO):
+            return true;
+
+        default:
+            return false;  // Deactivate Caps Word.
+    }
+}
