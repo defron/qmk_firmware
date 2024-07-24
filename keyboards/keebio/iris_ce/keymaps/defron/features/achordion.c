@@ -303,7 +303,6 @@ __attribute__((weak)) bool achordion_chord(uint16_t tap_hold_keycode,
     case RCTL_T(KC_J):
         if (other_keycode == KC_L) { return true; }
         break;
-    case LT(1,KC_ESC):
     case LCTL_T(QK_REP):
     case LCTL_T(QK_AREP):
     case RSFT_T(KC_ENT):
