@@ -11,9 +11,9 @@
 #define MK_3_SPEED
 #define MK_C_OFFSET_0 4
 #define MK_C_INTERVAL_0 16
-#define MK_C_OFFSET_1 8
+#define MK_C_OFFSET_1 10
 #define MK_C_INTERVAL_1 16
-#define MK_C_OFFSET_2 16
+#define MK_C_OFFSET_2 20
 #define MK_C_INTERVAL_2 16
 #define PERMISSIVE_HOLD_PER_KEY
 #define TAPPING_TERM 200
