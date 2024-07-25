@@ -65,7 +65,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
      KC_TRNS,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,                              KC_F6,   KC_F7,    KC_F8,   KC_F9,  KC_F10,  KC_TRNS,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_TRNS,  KC_PGUP, KC_VOLD, KC_MS_U, KC_VOLU, KC_PGDN,                            KC_PIPE, KC_UNDS,  KC_UP,  KC_F11,  KC_F12,  KC_MINS,
+     KC_TRNS,  KC_PGUP, KC_VOLD, KC_MS_U, KC_VOLU, KC_PGDN,                            KC_PIPE, KC_UNDS,  KC_UP,  KC_RCBR, KC_F11,  KC_MINS,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      KC_TRNS,  KC_WH_U, KC_MS_L, KC_MS_D, KC_MS_R, KC_WH_D,                            KC_HOME, KC_LEFT, KC_DOWN, KC_RGHT,  KC_END, KC_TRNS,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
@@ -157,7 +157,7 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
         case RCTL_T(KC_J):
         case LCTL_T(KC_F):
         case RALT_T(KC_L):
-            return 260;
+            return 230;
         case TD(TD_MO_ESC):
         case TD(TD_X_MO):
             return 300;
@@ -220,6 +220,7 @@ void leader_end_user(void) {
         SEND_STRING(SS_LCTL("ku"));
     } else if (leader_sequence_one_key(KC_SPC)) {
         // Leader, SPACE => base layer
+        previous_layer = 0;
         layer_move(_QWERTY);
     } else if (leader_sequence_two_keys(KC_SPC, KC_SPC)) {
         // Leader, SPACE, SPACE => nav layer
@@ -268,6 +269,7 @@ void x_finished(tap_dance_state_t *state, void *user_data) {
             break;
         case TD_SINGLE_TAP:
             layer_move(_QWERTY);
+            previous_layer = 0;
             break;
         case TD_DOUBLE_TAP:
             layer_move(_NAV);
@@ -346,7 +348,6 @@ bool caps_word_press_user(uint16_t keycode) {
     switch (keycode) {
         // Keycodes that continue Caps Word, with shift applied.
         case KC_A ... KC_Z:
-        case KC_MINS:
             add_weak_mods(MOD_BIT(KC_LSFT));  // Apply shift to next key.
             return true;
 
@@ -354,6 +355,7 @@ bool caps_word_press_user(uint16_t keycode) {
         case KC_1 ... KC_0:
         case KC_BSPC:
         case KC_DEL:
+        case KC_MINS:
         case KC_UNDS:
         case TD(TD_X_MO):
         case TD(TD_MO_ESC):
@@ -362,4 +364,48 @@ bool caps_word_press_user(uint16_t keycode) {
         default:
             return false;  // Deactivate Caps Word.
     }
+}
+
+void keyboard_post_init_user(void) {
+    rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
+    rgb_matrix_sethsv_noeeprom(HSV_OFF);
+}
+
+bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+    
+    const uint8_t layer = get_highest_layer(layer_state);
+
+    if (!layer && !previous_layer)
+        return false;
+
+    uint8_t index = 0;
+    bool color_base = false;
+
+    HSV hsv;
+    hsv.s = 255;
+    hsv.v = 120;
+    
+    if (layer) {
+        index = g_led_config.matrix_co[0][1 + layer];
+        hsv.h = 64;
+    } else {
+        index = g_led_config.matrix_co[0][1 + previous_layer];
+        color_base = true;
+        hsv.h = 222;
+    }
+
+    if (index < led_min || index >= led_max)
+        return false;
+
+    RGB rgb = hsv_to_rgb(hsv);
+    rgb_matrix_set_color(index, rgb.r, rgb.g, rgb.b);
+
+    if(color_base) {
+        const uint8_t base = g_led_config.matrix_co[0][1];
+        hsv.h = 148;
+        RGB rgb = hsv_to_rgb(hsv);
+        rgb_matrix_set_color(base, rgb.r, rgb.g, rgb.b);
+    }
+
+    return false;
 }
