@@ -49,7 +49,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_QWERTY] = LAYOUT(
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
-     KC_GRV,   KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                                KC_6,    KC_7,    KC_8,    KC_9,    KC_0,   QK_LEAD,
+     KC_GRV,   KC_1,    KC_2,     KC_3,    KC_4,    KC_5,                               KC_6,    KC_7,    KC_8,    KC_9,    KC_0,   QK_LEAD,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      KC_TAB,   KC_Q,    KC_W,     KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_EQL,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
@@ -92,12 +92,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 
 bool remember_last_key_user(uint16_t keycode, keyrecord_t *record, uint8_t *remembered_mods) {
-    return keycode != K_MREP && keycode != K_MAREP && keycode != TD(TD_X_MO); // must not remember the magic key itself
+    return keycode != K_MREP && keycode != K_MAREP && keycode != TD(TD_X_MO); // must not remember the overloaded keys
 }
 
 bool repeat_preseed = false;
 bool alt_repeat_preseed = false;
 uint8_t previous_layer = 0;
+bool momentary_layer = false;
+bool capsword_active = false;
+bool leader_active = false;
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
@@ -196,10 +199,11 @@ bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
 }
 
 void leader_start_user(void) {
-    // Do something when the leader key is pressed
+    leader_active = true;
 }
 
 void leader_end_user(void) {
+    leader_active = false;
     if (leader_sequence_one_key(KC_W)) {
         // Leader, w => windows ctrl + alt + del
         tap_code16(LCTL(LALT(KC_DEL)));
@@ -260,6 +264,7 @@ void x_finished(tap_dance_state_t *state, void *user_data) {
     uint8_t curr_layer = get_highest_layer(layer_state);
     switch (xtap_state.state) {
         case TD_SINGLE_HOLD:
+            momentary_layer = true;
             previous_layer = curr_layer;
             if(curr_layer == _QWERTY) {
                 layer_move(_NAV);
@@ -286,6 +291,7 @@ void x_finished(tap_dance_state_t *state, void *user_data) {
 void x_reset(tap_dance_state_t *state, void *user_data) {
     switch (xtap_state.state) {
         case TD_SINGLE_HOLD:
+            momentary_layer = false;
             layer_move(previous_layer);
             if (previous_layer == _UTIL) {
                 layer_on(_NAV);
@@ -301,6 +307,7 @@ void mo_esc_finished(tap_dance_state_t *state, void *user_data) {
     uint8_t curr_layer = get_highest_layer(layer_state);
     switch (xtap_state.state) {
         case TD_SINGLE_HOLD:
+            momentary_layer = true;
             previous_layer = curr_layer;
             if(curr_layer == _QWERTY) {
                 layer_move(_NAV);
@@ -326,6 +333,7 @@ void mo_esc_finished(tap_dance_state_t *state, void *user_data) {
 void mo_esc_reset(tap_dance_state_t *state, void *user_data) {
     switch (xtap_state.state) {
         case TD_SINGLE_HOLD:
+            momentary_layer = false;
             layer_move(previous_layer);
             if (previous_layer == _UTIL) {
                 layer_on(_NAV);
@@ -374,24 +382,71 @@ void keyboard_post_init_user(void) {
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     
     const uint8_t layer = get_highest_layer(layer_state);
+    const uint8_t modified_layer_h = 148; //azure
+    const uint8_t prev_layer_h = 21; //orange
+    const uint8_t current_layer_h = 64; //green
+    const uint8_t mod_active_h = 43; //yellow
+    const uint8_t capsword_active_h = 180; //purple
+
+    const uint8_t mods = get_mods();
+    const uint8_t o_s_mods = get_oneshot_mods();
+
+    HSV hsv;
+    hsv.s = 255;
+    hsv.v = 100;
+
+    if(mods & MOD_MASK_CTRL || o_s_mods & MOD_MASK_CTRL) {
+        const uint8_t base = g_led_config.matrix_co[3][0];
+        hsv.h = mod_active_h;
+        RGB rgb = hsv_to_rgb(hsv);
+        rgb_matrix_set_color(base, rgb.r, rgb.g, rgb.b);
+    }
+    if(!capsword_active && (mods & MOD_MASK_SHIFT || o_s_mods & MOD_MASK_SHIFT)) {
+        const uint8_t base = g_led_config.matrix_co[2][0];
+        hsv.h = mod_active_h;
+        RGB rgb = hsv_to_rgb(hsv);
+        rgb_matrix_set_color(base, rgb.r, rgb.g, rgb.b);
+    }
+    if(capsword_active) {
+        const uint8_t base = g_led_config.matrix_co[2][0];
+        hsv.h = capsword_active_h;
+        RGB rgb = hsv_to_rgb(hsv);
+        rgb_matrix_set_color(base, rgb.r, rgb.g, rgb.b);
+    }
+    if(mods & MOD_MASK_ALT || o_s_mods & MOD_MASK_ALT) {
+        const uint8_t base = g_led_config.matrix_co[9][2];
+        hsv.h = mod_active_h;
+        RGB rgb = hsv_to_rgb(hsv);
+        rgb_matrix_set_color(base, rgb.r, rgb.g, rgb.b);
+    }
+    if(mods & MOD_MASK_GUI || o_s_mods & MOD_MASK_GUI) {
+        const uint8_t base = g_led_config.matrix_co[4][5];
+        hsv.h = mod_active_h;
+        RGB rgb = hsv_to_rgb(hsv);
+        rgb_matrix_set_color(base, rgb.r, rgb.g, rgb.b);
+    }
+    //TODO: how to sync this data? turning on rgb on wrong side for now
+    if(leader_active) {
+        const uint8_t base = g_led_config.matrix_co[0][0];
+        hsv.h = capsword_active_h;
+        RGB rgb = hsv_to_rgb(hsv);
+        rgb_matrix_set_color(base, rgb.r, rgb.g, rgb.b);
+    }
+
 
     if (!layer && !previous_layer)
         return false;
 
     uint8_t index = 0;
     bool color_base = false;
-
-    HSV hsv;
-    hsv.s = 255;
-    hsv.v = 120;
     
     if (layer) {
         index = g_led_config.matrix_co[0][1 + layer];
-        hsv.h = 64;
+        hsv.h = momentary_layer ? modified_layer_h : current_layer_h;
     } else {
         index = g_led_config.matrix_co[0][1 + previous_layer];
         color_base = true;
-        hsv.h = 222;
+        hsv.h = prev_layer_h;
     }
 
     if (index < led_min || index >= led_max)
@@ -402,10 +457,18 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
 
     if(color_base) {
         const uint8_t base = g_led_config.matrix_co[0][1];
-        hsv.h = 148;
+        hsv.h = modified_layer_h;
         RGB rgb = hsv_to_rgb(hsv);
         rgb_matrix_set_color(base, rgb.r, rgb.g, rgb.b);
     }
 
     return false;
+}
+
+void caps_word_set_user(bool active) {
+    if (active) {
+        capsword_active = true;
+    } else {
+        capsword_active = false;
+    }
 }
