@@ -3,6 +3,7 @@
 
 #include QMK_KEYBOARD_H
 #include "features/achordion.h"
+#include "transactions.h"
 
 #define K_MREP LCTL_T(QK_REP)
 #define K_MAREP LCTL_T(QK_AREP)
@@ -215,7 +216,19 @@ void leader_end_user(void) {
         SEND_STRING(SS_LCTL(SS_LSFT("v")));
     } else if (leader_sequence_one_key(KC_F12)) {
         // Leader, f12 => find all references
-        SEND_STRING(SS_LALT(SS_LSFT(SS_TAP(X_F12))));
+        SEND_STRING(SS_LSFT(SS_TAP(X_F12)));
+    } else if (leader_sequence_one_key(KC_J)) {
+        // Leader, j => ctrl + left arrow
+        SEND_STRING(SS_LCTL(SS_TAP(X_LEFT)));
+    } else if (leader_sequence_one_key(KC_L)) {
+        // Leader, l => ctrl + right arrow
+        SEND_STRING(SS_LCTL(SS_TAP(X_RIGHT)));
+    } else if (leader_sequence_one_key(KC_COMM)) {
+        // Leader, comma => alt + left arrow
+        SEND_STRING(SS_LALT(SS_TAP(X_LEFT)));
+    } else if (leader_sequence_one_key(KC_DOT)) {
+        // Leader, comma => alt + right arrow
+        SEND_STRING(SS_LALT(SS_TAP(X_LEFT)));
     } else if (leader_sequence_two_keys(KC_K, KC_C)) {
         // Leader, k, c => comment out block
         SEND_STRING(SS_LCTL("kc"));
@@ -374,10 +387,6 @@ bool caps_word_press_user(uint16_t keycode) {
     }
 }
 
-void keyboard_post_init_user(void) {
-    rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
-    rgb_matrix_sethsv_noeeprom(HSV_OFF);
-}
 
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     
@@ -396,41 +405,40 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     hsv.v = 100;
 
     if(mods & MOD_MASK_CTRL || o_s_mods & MOD_MASK_CTRL) {
-        const uint8_t base = g_led_config.matrix_co[3][0];
+        const uint8_t ctrl = g_led_config.matrix_co[3][0];
         hsv.h = mod_active_h;
         RGB rgb = hsv_to_rgb(hsv);
-        rgb_matrix_set_color(base, rgb.r, rgb.g, rgb.b);
+        rgb_matrix_set_color(ctrl, rgb.r, rgb.g, rgb.b);
     }
     if(!capsword_active && (mods & MOD_MASK_SHIFT || o_s_mods & MOD_MASK_SHIFT)) {
-        const uint8_t base = g_led_config.matrix_co[2][0];
+        const uint8_t shft = g_led_config.matrix_co[2][0];
         hsv.h = mod_active_h;
         RGB rgb = hsv_to_rgb(hsv);
-        rgb_matrix_set_color(base, rgb.r, rgb.g, rgb.b);
+        rgb_matrix_set_color(shft, rgb.r, rgb.g, rgb.b);
     }
     if(capsword_active) {
-        const uint8_t base = g_led_config.matrix_co[2][0];
+        const uint8_t capsword = g_led_config.matrix_co[2][0];
         hsv.h = capsword_active_h;
         RGB rgb = hsv_to_rgb(hsv);
-        rgb_matrix_set_color(base, rgb.r, rgb.g, rgb.b);
+        rgb_matrix_set_color(capsword, rgb.r, rgb.g, rgb.b);
     }
     if(mods & MOD_MASK_ALT || o_s_mods & MOD_MASK_ALT) {
-        const uint8_t base = g_led_config.matrix_co[9][2];
+        const uint8_t alt = g_led_config.matrix_co[9][2];
         hsv.h = mod_active_h;
         RGB rgb = hsv_to_rgb(hsv);
-        rgb_matrix_set_color(base, rgb.r, rgb.g, rgb.b);
+        rgb_matrix_set_color(alt, rgb.r, rgb.g, rgb.b);
     }
     if(mods & MOD_MASK_GUI || o_s_mods & MOD_MASK_GUI) {
-        const uint8_t base = g_led_config.matrix_co[4][5];
+        const uint8_t super = g_led_config.matrix_co[4][5];
         hsv.h = mod_active_h;
         RGB rgb = hsv_to_rgb(hsv);
-        rgb_matrix_set_color(base, rgb.r, rgb.g, rgb.b);
+        rgb_matrix_set_color(super, rgb.r, rgb.g, rgb.b);
     }
-    //TODO: how to sync this data? turning on rgb on wrong side for now
     if(leader_active) {
-        const uint8_t base = g_led_config.matrix_co[0][0];
+        const uint8_t leader = g_led_config.matrix_co[5][0];
         hsv.h = capsword_active_h;
         RGB rgb = hsv_to_rgb(hsv);
-        rgb_matrix_set_color(base, rgb.r, rgb.g, rgb.b);
+        rgb_matrix_set_color(leader, rgb.r, rgb.g, rgb.b);
     }
 
 
@@ -470,5 +478,41 @@ void caps_word_set_user(bool active) {
         capsword_active = true;
     } else {
         capsword_active = false;
+    }
+}
+
+//TODO: should I do something similar for capsword and previous layer? they only work if left is master
+void leader_rgb_sync_handler(uint8_t in_buflen, const void* in_data, uint8_t out_buflen, void* out_data) {
+    memcpy(&leader_active, in_data, in_buflen);
+}
+
+void keyboard_post_init_user(void) {
+    transaction_register_rpc(USER_RPC_LEADER_SYNC, leader_rgb_sync_handler);
+    rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
+    rgb_matrix_sethsv_noeeprom(HSV_OFF);
+}
+
+void housekeeping_task_user(void) {
+    if (is_keyboard_master()) {
+
+        bool needs_sync = false;
+        static uint16_t last_sync = false;
+        static bool last_state = false;
+
+        if (memcmp(&leader_active, &last_state, sizeof(last_state))) {
+            needs_sync = true;
+            memcpy(&last_state, &leader_active, sizeof(last_state));
+        }
+
+        if (timer_elapsed32(last_sync) > 250) {
+            needs_sync = true;
+        }
+
+        // Perform the sync if requested
+        if (needs_sync) {
+            if (transaction_rpc_send(USER_RPC_LEADER_SYNC, sizeof(leader_active), &leader_active)) {
+                last_sync = timer_read32();
+            }
+        }
     }
 }
