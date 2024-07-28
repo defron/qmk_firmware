@@ -538,6 +538,11 @@ static void print_status_narrow(void) {
     } else {
         oled_write_ln_P(PSTR(" "), false);
     }
+    if (leader_active) {
+        oled_write_P(PSTR("LEADR"), false);
+    } else {
+        oled_write_ln_P(PSTR(" "), false);
+    }
     oled_write_P(PSTR("\n"), false);
     oled_write_ln_P(PSTR("WPM:"), false);
     oled_write(get_u8_str(get_current_wpm(), ' '), false);
