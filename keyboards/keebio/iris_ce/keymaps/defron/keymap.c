@@ -7,6 +7,10 @@
 
 #define K_MREP LCTL_T(QK_REP)
 #define K_MAREP LCTL_T(QK_AREP)
+#define K_MACL2 LCTL_T(KC_ACL2)
+#define K_MACL1 LSFT_T(KC_ACL1)
+#define K_MACL0 LALT_T(KC_ACL0)
+#define M_GUISC RGUI_T(KC_SCLN)
 
 typedef enum {
     TD_NONE,
@@ -50,15 +54,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_QWERTY] = LAYOUT(
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
-     KC_GRV,   KC_1,    KC_2,     KC_3,    KC_4,    KC_5,                               KC_6,    KC_7,    KC_8,    KC_9,    KC_0,   QK_LEAD,
+     KC_LALT,   KC_1,    KC_2,     KC_3,    KC_4,    KC_5,                               KC_6,    KC_7,    KC_8,    KC_9,    KC_0,   KC_LGUI,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      KC_TAB,   KC_Q,    KC_W,     KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_EQL,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_LSFT, KC_A, LALT_T(KC_S), KC_D, LCTL_T(KC_F), KC_G,                           KC_H, RCTL_T(KC_J), KC_K, RALT_T(KC_L), KC_SCLN, KC_QUOT,
+     KC_LSFT, KC_A, LALT_T(KC_S), KC_D, LCTL_T(KC_F), KC_G,                           KC_H, RCTL_T(KC_J), KC_K, RALT_T(KC_L), M_GUISC, KC_QUOT,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     K_MAREP,   KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,   KC_LGUI,     TD(TD_MO_ESC), KC_N,    KC_M,  KC_COMM,  KC_DOT,  KC_SLSH, KC_LBRC,
+     KC_GRV,   KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,   QK_LEAD,     TD(TD_MO_ESC), KC_N,    KC_M,  KC_COMM,  KC_DOT,  KC_SLSH, KC_LBRC,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
-                                   KC_F12, TD(TD_X_MO), KC_SPC,               RSFT_T(KC_ENT), KC_BSPC, KC_RALT 
+                                   KC_F12, TD(TD_X_MO), KC_SPC,               RSFT_T(KC_ENT), KC_BSPC, K_MAREP 
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
   ),
 
@@ -70,9 +74,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      KC_TRNS,  KC_WH_U, KC_MS_L, KC_MS_D, KC_MS_R, KC_WH_D,                            KC_HOME, KC_LEFT, KC_DOWN, KC_RGHT,  KC_END, KC_TRNS,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     K_MREP, KC_LALT, KC_ACL0, KC_ACL1, KC_ACL2, TT(_UTIL), KC_TRNS,         KC_TRNS, KC_DEL,  KC_BTN1, KC_BTN3,  KC_BTN2, KC_BSLS, KC_RBRC,
+     K_MREP,  KC_LGUI, K_MACL0, K_MACL1, K_MACL2, TT(_UTIL), KC_TRNS,        KC_TRNS, KC_DEL,  KC_BTN1, KC_BTN3,  KC_BTN2, KC_BSLS, KC_RBRC,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
-                                     KC_TRNS, KC_TRNS, KC_TRNS,                   KC_TRNS, KC_TRNS, KC_TRNS
+                                     KC_TRNS, KC_TRNS, KC_TRNS,                   KC_TRNS, KC_TRNS, K_MREP
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
   ),
 
@@ -84,7 +88,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      KC_TRNS, KC_LGUI, KC_LALT, KC_LSFT, KC_LCTL,   KC_NO,                            KC_PPLS,   KC_4,    KC_5,    KC_6,   KC_PAST, KC_TRNS,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_TRNS,  KC_LALT, KC_NO,   KC_NO,   KC_NO,   KC_TRNS, KC_TRNS,         KC_TRNS,  KC_PDOT,  KC_1,    KC_2,    KC_3,   KC_BSPC,  KC_NO,
+     KC_TRNS,  KC_NO,  KC_LALT,  KC_NO,   KC_NO,   KC_TRNS, KC_TRNS,         KC_TRNS,  KC_PDOT,  KC_1,    KC_2,    KC_3,   KC_BSPC,  KC_NO,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
                                      KC_TRNS, KC_TRNS, KC_TRNS,                   KC_ENT,   KC_0,   KC_TRNS
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
@@ -139,6 +143,24 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 return false;        // Return false to ignore further processing of key
             }
             break;
+        case K_MACL2:
+            if (record->tap.count && record->event.pressed) {
+                mousekey_on(KC_ACL2); // accerlate mouse
+                return false;
+            }
+            break;
+        case K_MACL1:
+            if (record->tap.count && record->event.pressed) {
+                mousekey_on(KC_ACL1); // normal mouse
+                return false;
+            }
+            break;
+        case K_MACL0:
+            if (record->tap.count && record->event.pressed) {
+                mousekey_on(KC_ACL0); // slow mouse
+                return false;
+            }
+            break;
     }
     if (!process_achordion(keycode, record)) { return false; }
     return true;
@@ -152,8 +174,8 @@ const key_override_t delete_key_override = ko_make_basic(MOD_MASK_SHIFT, KC_BSPC
 
 // This globally defines all key overrides to be used
 const key_override_t **key_overrides = (const key_override_t *[]){
-	&delete_key_override,
-	NULL // Null terminate the array of overrides!
+    &delete_key_override,
+    NULL // Null terminate the array of overrides!
 };
 
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
@@ -162,6 +184,7 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
         case LCTL_T(KC_F):
         case RALT_T(KC_L):
         case LALT_T(KC_S):
+        case M_GUISC:
             return 230;
         case TD(TD_MO_ESC):
         case TD(TD_X_MO):
@@ -182,6 +205,9 @@ uint16_t get_quick_tap_term(uint16_t keycode, keyrecord_t *record) {
             return 130;
         case K_MREP:
         case K_MAREP:
+        case K_MACL2:
+        case K_MACL1:
+        case K_MACL0:
             return 0;
         default:
             return QUICK_TAP_TERM;
@@ -193,6 +219,10 @@ bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
         case RSFT_T(KC_ENT):
         case K_MAREP:
         case K_MREP:
+        case K_MACL2:
+        case K_MACL1:
+        case K_MACL0:
+        case M_GUISC:
             // Immediately select the hold action when another key is tapped.
             return true;
         default:
@@ -394,7 +424,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     
     const uint8_t layer = get_highest_layer(layer_state);
     const uint8_t azure_hue = 148;
-    const uint8_t orange_hue = 17;
+    const uint8_t orange_hue = 15;
     const uint8_t green_hue = 64;
     const uint8_t cyan_hue = 127;
     const uint8_t violet_hue = 180;
@@ -407,7 +437,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     hsv.v = 100;
 
     if (mods & MOD_MASK_CTRL || o_s_mods & MOD_MASK_CTRL) {
-        const uint8_t ctrl = g_led_config.matrix_co[3][0];
+        const uint8_t ctrl = g_led_config.matrix_co[9][2];
         hsv.h = cyan_hue;
         RGB rgb = hsv_to_rgb(hsv);
         rgb_matrix_set_color(ctrl, rgb.r, rgb.g, rgb.b);
@@ -425,19 +455,19 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         rgb_matrix_set_color(capsword, rgb.r, rgb.g, rgb.b);
     }
     if (mods & MOD_MASK_ALT || o_s_mods & MOD_MASK_ALT) {
-        const uint8_t alt = g_led_config.matrix_co[9][2];
+        const uint8_t alt = g_led_config.matrix_co[0][0];
         hsv.h = cyan_hue;
         RGB rgb = hsv_to_rgb(hsv);
         rgb_matrix_set_color(alt, rgb.r, rgb.g, rgb.b);
     }
     if (mods & MOD_MASK_GUI || o_s_mods & MOD_MASK_GUI) {
-        const uint8_t super = g_led_config.matrix_co[4][5];
+        const uint8_t super = g_led_config.matrix_co[5][0];
         hsv.h = cyan_hue;
         RGB rgb = hsv_to_rgb(hsv);
         rgb_matrix_set_color(super, rgb.r, rgb.g, rgb.b);
     }
     if (leader_active) {
-        const uint8_t leader = g_led_config.matrix_co[5][0];
+        const uint8_t leader = g_led_config.matrix_co[4][5];
         hsv.h = violet_hue;
         RGB rgb = hsv_to_rgb(hsv);
         rgb_matrix_set_color(leader, rgb.r, rgb.g, rgb.b);

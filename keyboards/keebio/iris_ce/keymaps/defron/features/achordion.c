@@ -306,6 +306,10 @@ __attribute__((weak)) bool achordion_chord(uint16_t tap_hold_keycode,
     case LCTL_T(QK_REP):
     case LCTL_T(QK_AREP):
     case RSFT_T(KC_ENT):
+    case LCTL_T(KC_ACL2):
+    case LSFT_T(KC_ACL1):
+    case LALT_T(KC_ACL0):
+    case RGUI_T(KC_SCLN):
         return true;
   }
 
