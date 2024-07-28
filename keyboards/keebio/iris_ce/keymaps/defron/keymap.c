@@ -54,7 +54,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      KC_TAB,   KC_Q,    KC_W,     KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_EQL,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_LSFT,   KC_A,    KC_S,   KC_D, LCTL_T(KC_F), KC_G,                            KC_H, RCTL_T(KC_J), KC_K, RALT_T(KC_L), KC_SCLN, KC_QUOT,
+     KC_LSFT, KC_A, LALT_T(KC_S), KC_D, LCTL_T(KC_F), KC_G,                           KC_H, RCTL_T(KC_J), KC_K, RALT_T(KC_L), KC_SCLN, KC_QUOT,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      K_MAREP,   KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,   KC_LGUI,     TD(TD_MO_ESC), KC_N,    KC_M,  KC_COMM,  KC_DOT,  KC_SLSH, KC_LBRC,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
@@ -70,7 +70,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      KC_TRNS,  KC_WH_U, KC_MS_L, KC_MS_D, KC_MS_R, KC_WH_D,                            KC_HOME, KC_LEFT, KC_DOWN, KC_RGHT,  KC_END, KC_TRNS,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-    K_MREP,  KC_LALT, KC_ACL0, KC_ACL1, KC_ACL2, TT(_UTIL), KC_TRNS,         KC_TRNS, KC_DEL,  KC_BTN1, KC_BTN3,  KC_BTN2, KC_BSLS, KC_RBRC,
+     K_MREP, KC_LALT, KC_ACL0, KC_ACL1, KC_ACL2, TT(_UTIL), KC_TRNS,         KC_TRNS, KC_DEL,  KC_BTN1, KC_BTN3,  KC_BTN2, KC_BSLS, KC_RBRC,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
                                      KC_TRNS, KC_TRNS, KC_TRNS,                   KC_TRNS, KC_TRNS, KC_TRNS
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
@@ -78,15 +78,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_UTIL] = LAYOUT(
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
-     QK_BOOT,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,                              KC_F6,   KC_F7,   KC_DEL,   KC_F9,  KC_F10,  KC_TRNS,
+     QK_BOOT,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   EE_CLR,                             KC_F6,   KC_F7,   KC_DEL,   KC_F9,  KC_F10,  KC_TRNS,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      KC_TRNS,   KC_NO,   KC_NO,   KC_NO,  KC_PSCR,  KC_NO,                            KC_PMNS,   KC_7,    KC_8,    KC_9,   KC_SLSH, RGB_TOG,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      KC_TRNS, KC_LGUI, KC_LALT, KC_LSFT, KC_LCTL,   KC_NO,                            KC_PPLS,   KC_4,    KC_5,    KC_6,   KC_PAST, KC_TRNS,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     EE_CLR,  KC_LALT,  KC_NO,   KC_NO,   KC_NO,   KC_TRNS, KC_TRNS,         KC_TRNS,  KC_PDOT,  KC_1,    KC_2,    KC_3,   KC_BSPC, KC_TRNS,
+     KC_TRNS,  KC_LALT, KC_NO,   KC_NO,   KC_NO,   KC_TRNS, KC_TRNS,         KC_TRNS,  KC_PDOT,  KC_1,    KC_2,    KC_3,   KC_BSPC,  KC_NO,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
-                                     KC_TRNS, KC_TRNS, KC_TRNS,                   KC_TRNS,  KC_0,   KC_TRNS
+                                     KC_TRNS, KC_TRNS, KC_TRNS,                   KC_ENT,   KC_0,   KC_TRNS
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
   )
 };
@@ -161,6 +161,7 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
         case RCTL_T(KC_J):
         case LCTL_T(KC_F):
         case RALT_T(KC_L):
+        case LALT_T(KC_S):
             return 230;
         case TD(TD_MO_ESC):
         case TD(TD_X_MO):
@@ -177,6 +178,7 @@ uint16_t get_quick_tap_term(uint16_t keycode, keyrecord_t *record) {
         case RCTL_T(KC_J):
         case LCTL_T(KC_F):
         case RALT_T(KC_L):
+        case LALT_T(KC_S):
             return 130;
         case K_MREP:
         case K_MAREP:
@@ -391,11 +393,11 @@ bool caps_word_press_user(uint16_t keycode) {
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     
     const uint8_t layer = get_highest_layer(layer_state);
-    const uint8_t modified_layer_h = 148; //azure
-    const uint8_t prev_layer_h = 21; //orange
-    const uint8_t current_layer_h = 64; //green
-    const uint8_t mod_active_h = 43; //yellow
-    const uint8_t capsword_active_h = 180; //purple
+    const uint8_t azure_hue = 148;
+    const uint8_t orange_hue = 17;
+    const uint8_t green_hue = 64;
+    const uint8_t cyan_hue = 127;
+    const uint8_t violet_hue = 180;
 
     const uint8_t mods = get_mods();
     const uint8_t o_s_mods = get_oneshot_mods();
@@ -404,39 +406,39 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     hsv.s = 255;
     hsv.v = 100;
 
-    if(mods & MOD_MASK_CTRL || o_s_mods & MOD_MASK_CTRL) {
+    if (mods & MOD_MASK_CTRL || o_s_mods & MOD_MASK_CTRL) {
         const uint8_t ctrl = g_led_config.matrix_co[3][0];
-        hsv.h = mod_active_h;
+        hsv.h = cyan_hue;
         RGB rgb = hsv_to_rgb(hsv);
         rgb_matrix_set_color(ctrl, rgb.r, rgb.g, rgb.b);
     }
-    if(!capsword_active && (mods & MOD_MASK_SHIFT || o_s_mods & MOD_MASK_SHIFT)) {
+    if (!capsword_active && (mods & MOD_MASK_SHIFT || o_s_mods & MOD_MASK_SHIFT)) {
         const uint8_t shft = g_led_config.matrix_co[2][0];
-        hsv.h = mod_active_h;
+        hsv.h = cyan_hue;
         RGB rgb = hsv_to_rgb(hsv);
         rgb_matrix_set_color(shft, rgb.r, rgb.g, rgb.b);
     }
-    if(capsword_active) {
+    if (capsword_active) {
         const uint8_t capsword = g_led_config.matrix_co[2][0];
-        hsv.h = capsword_active_h;
+        hsv.h = violet_hue;
         RGB rgb = hsv_to_rgb(hsv);
         rgb_matrix_set_color(capsword, rgb.r, rgb.g, rgb.b);
     }
-    if(mods & MOD_MASK_ALT || o_s_mods & MOD_MASK_ALT) {
+    if (mods & MOD_MASK_ALT || o_s_mods & MOD_MASK_ALT) {
         const uint8_t alt = g_led_config.matrix_co[9][2];
-        hsv.h = mod_active_h;
+        hsv.h = cyan_hue;
         RGB rgb = hsv_to_rgb(hsv);
         rgb_matrix_set_color(alt, rgb.r, rgb.g, rgb.b);
     }
-    if(mods & MOD_MASK_GUI || o_s_mods & MOD_MASK_GUI) {
+    if (mods & MOD_MASK_GUI || o_s_mods & MOD_MASK_GUI) {
         const uint8_t super = g_led_config.matrix_co[4][5];
-        hsv.h = mod_active_h;
+        hsv.h = cyan_hue;
         RGB rgb = hsv_to_rgb(hsv);
         rgb_matrix_set_color(super, rgb.r, rgb.g, rgb.b);
     }
-    if(leader_active) {
+    if (leader_active) {
         const uint8_t leader = g_led_config.matrix_co[5][0];
-        hsv.h = capsword_active_h;
+        hsv.h = violet_hue;
         RGB rgb = hsv_to_rgb(hsv);
         rgb_matrix_set_color(leader, rgb.r, rgb.g, rgb.b);
     }
@@ -450,11 +452,11 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     
     if (layer) {
         index = g_led_config.matrix_co[0][1 + layer];
-        hsv.h = momentary_layer ? modified_layer_h : current_layer_h;
+        hsv.h = momentary_layer ? azure_hue : green_hue;
     } else {
         index = g_led_config.matrix_co[0][1 + previous_layer];
         color_base = true;
-        hsv.h = prev_layer_h;
+        hsv.h = orange_hue;
     }
 
     if (index < led_min || index >= led_max)
@@ -465,7 +467,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
 
     if(color_base) {
         const uint8_t base = g_led_config.matrix_co[0][1];
-        hsv.h = modified_layer_h;
+        hsv.h = azure_hue;
         RGB rgb = hsv_to_rgb(hsv);
         rgb_matrix_set_color(base, rgb.r, rgb.g, rgb.b);
     }
@@ -481,7 +483,7 @@ void caps_word_set_user(bool active) {
     }
 }
 
-//TODO: should I do something similar for capsword and previous layer? they only work if left is master
+//TODO: if I swap super and leader I should remove this
 void leader_rgb_sync_handler(uint8_t in_buflen, const void* in_data, uint8_t out_buflen, void* out_data) {
     memcpy(&leader_active, in_data, in_buflen);
 }
@@ -515,4 +517,53 @@ void housekeeping_task_user(void) {
             }
         }
     }
+}
+
+uint16_t get_alt_repeat_key_keycode_user(uint16_t keycode, uint8_t mods) {
+    if ((mods & MOD_MASK_CTRL)) {  // Was Ctrl held?
+        switch (keycode) {
+            case KC_Y: return C(KC_Z);
+            case KC_Z: return C(KC_Y);
+            case KC_C: return C(KC_V);
+            case KC_W: return C(S(KC_T));
+            case KC_T: return C(KC_W);
+        }
+    }
+    bool shifted = (mods & MOD_MASK_SHIFT);
+    switch (keycode) {
+        case KC_TAB:
+            if (shifted) {
+                return KC_TAB;
+            } else {
+                return S(KC_TAB);
+            }
+        case KC_DOT:
+            if (shifted) {
+                return KC_LT;
+            }
+        case KC_COMM:
+            if (shifted) {
+                return KC_GT;
+            }
+        case KC_0:
+            if (shifted) {
+                return KC_LPRN;
+            } else {
+                return KC_1;
+            }
+        case KC_1:
+            if (shifted) {
+                return KC_RPRN;
+            } else {
+                return KC_0;
+            }
+        case KC_EQL:
+            if (shifted) {
+                return KC_MINS;
+            }
+        case KC_MINS:
+            return KC_PLUS;
+    }
+
+    return KC_TRNS;  // Defer to default definitions.
 }
