@@ -36,15 +36,18 @@ typedef struct {
 td_state_t cur_dance(tap_dance_state_t *state);
 
 // For the x tap dance. Put it here so it can be used in any keymap
-void x_finished(tap_dance_state_t *state, void *user_data);
-void x_reset(tap_dance_state_t *state, void *user_data);
-void mo_esc_finished(tap_dance_state_t *state, void *user_data);
-void mo_esc_reset(tap_dance_state_t *state, void *user_data);
+void layr_finished(tap_dance_state_t *state, void *user_data);
+void layr_reset(tap_dance_state_t *state, void *user_data);
+void mesc_finished(tap_dance_state_t *state, void *user_data);
+void mesc_reset(tap_dance_state_t *state, void *user_data);
+void mf12_finished(tap_dance_state_t *state, void *user_data);
+void mf12_reset(tap_dance_state_t *state, void *user_data);
 
 // Tap Dance declarations
 enum {
-    TD_X_MO,
-    TD_MO_ESC,
+    TD_LAYR,
+    TD_MESC,
+    TD_MF12
 };
 
 
@@ -66,7 +69,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_GRV,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,   KC_MUTE,         KC_MPLY,   KC_N,    KC_M,  KC_COMM,  KC_DOT,  KC_SLSH, KC_LBRC,
   //└────────┴────────┼────────┼────────┼────────┼────────┼────────┤        ├────────┼────────┼────────┼────────┼────────┼────────┴────────┘
-                      QK_REP, QK_LEAD, TD(TD_X_MO), KC_SPC, KC_F12,      TD(TD_X_MO), MRS_ENT,  KC_BSPC, K_MAREP, KC_ESC
+                      QK_REP, QK_LEAD, TD(TD_LAYR), KC_SPC, TD(TD_MF12),   TD(TD_LAYR), MRS_ENT, KC_BSPC, K_MAREP, KC_ESC
                   //  └────────┴────────┴────────┴────────┴────────┘        └────────┴────────┴────────┴────────┴────────┘
   ),
 
@@ -76,9 +79,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      KC_TRNS,  KC_PGUP, KC_VOLD, KC_MS_U, KC_VOLU, KC_PGDN,                            KC_PIPE, KC_UNDS,  KC_UP,  KC_RCBR, KC_F11,  KC_MINS,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_TRNS,  KC_WH_U, KC_MS_L, KC_MS_D, KC_MS_R, KC_WH_D,                            KC_HOME, KC_LEFT, KC_DOWN, KC_RGHT,  KC_END, KC_TRNS,
+     KC_TRNS,  KC_WH_U, KC_MS_L, KC_MS_D, KC_MS_R, KC_WH_D,                            KC_HOME, KC_LEFT, KC_DOWN, KC_RGHT, KC_END,  KC_TRNS,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     K_MREP,  KC_LGUI, K_MACL0, K_MACL1, K_MACL2, TT(_UTIL), KC_TRNS,        KC_TRNS, KC_DEL,  KC_BTN1, KC_BTN3,  KC_BTN2, KC_BSLS, KC_RBRC,
+     K_MREP,  KC_LGUI, K_MACL0, K_MACL1, K_MACL2,  KC_NO,   KC_TRNS,         KC_TRNS,  KC_DEL,  KC_BTN1, KC_BTN3, KC_BTN2, KC_BSLS, KC_RBRC,
   //└────────┴────────┼────────┼────────┼────────┼────────┼────────┤        ├────────┼────────┼────────┼────────┼────────┼────────┴────────┘
                         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,          KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
                   //  └────────┴────────┴────────┴────────┴────────┘        └────────┴────────┴────────┴────────┴────────┘
@@ -88,11 +91,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
      QK_BOOT,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   EE_CLR,                             KC_F6,   KC_F7,   KC_DEL,   KC_F9,  KC_F10,  KC_TRNS,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_TRNS,   KC_NO,   KC_NO,   KC_NO,  KC_PSCR,  KC_NO,                            KC_PMNS,   KC_7,    KC_8,    KC_9,   KC_SLSH, RGB_TOG,
+     KC_TRNS,  KC_NO,   KC_NO,   KC_NO,   KC_PSCR,  KC_NO,                            KC_PMNS,   KC_7,    KC_8,    KC_9,   KC_SLSH,  KC_NO,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_TRNS, KC_LGUI, KC_LALT, KC_LSFT, KC_LCTL,   KC_NO,                            KC_PPLS,   KC_4,    KC_5,    KC_6,   KC_PAST, KC_TRNS,
+     KC_TRNS,  KC_LGUI, KC_LALT, KC_LSFT, KC_LCTL,  KC_NO,                            KC_PPLS,   KC_4,    KC_5,    KC_6,   KC_PAST, KC_TRNS,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_TRNS,  KC_NO,  KC_LALT,  KC_NO,   KC_NO,   KC_TRNS, KC_TRNS,         KC_TRNS,  KC_PDOT,  KC_1,    KC_2,    KC_3,   KC_BSPC,  KC_NO,
+     K_MREP,   KC_NO,   KC_LALT, KC_NO,   KC_NO,    KC_NO,  KC_TRNS,          KC_TRNS, KC_DOT,   KC_1,    KC_2,    KC_3,   KC_BSPC,  KC_NO,
   //└────────┴────────┼────────┼────────┼────────┼────────┼────────┤        ├────────┼────────┼────────┼────────┼────────┼────────┴────────┘
                         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,          KC_TRNS, KC_ENT,   KC_0,   KC_TRNS, KC_TRNS
                   //  └────────┴────────┴────────┴────────┴────────┘        └────────┴────────┴────────┴────────┴────────┘
@@ -109,7 +112,11 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 
 
 bool remember_last_key_user(uint16_t keycode, keyrecord_t *record, uint8_t *remembered_mods) {
-    return keycode != K_MREP && keycode != K_MAREP && keycode != TD(TD_X_MO); // must not remember the overloaded keys
+    return keycode != K_MREP &&
+           keycode != K_MAREP && 
+           keycode != TD(TD_LAYR) &&
+           keycode != TD(TD_MESC) &&
+           keycode != TD(TD_MF12); // must not remember the overloaded keys
 }
 
 bool repeat_preseed = false;
@@ -198,10 +205,11 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
         case MLALT_S:
         case M_GUISC:
             return 230;
-        case TD(TD_MO_ESC):
-        case TD(TD_X_MO):
+        case TD(TD_MESC):
+        case TD(TD_LAYR):
             return 300;
         case KC_LSFT:
+        case TD(TD_MF12):
             return 250;
         default:
             return TAPPING_TERM;
@@ -228,7 +236,7 @@ uint16_t get_quick_tap_term(uint16_t keycode, keyrecord_t *record) {
 
 bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
-        case RSFT_T(KC_ENT):
+        case MRS_ENT:
         case K_MAREP:
         case K_MREP:
         case K_MACL2:
@@ -258,7 +266,7 @@ void leader_end_user(void) {
     } else if (leader_sequence_one_key(KC_V)) {
         // Leader, v => Ctrl + Shift + V
         SEND_STRING(SS_LCTL(SS_LSFT("v")));
-    } else if (leader_sequence_one_key(KC_F12)) {
+    } if (leader_sequence_one_key(TD(TD_MF12))) {
         // Leader, f12 => find all references
         SEND_STRING(SS_LSFT(SS_TAP(X_F12)));
     } else if (leader_sequence_one_key(KC_J)) {
@@ -316,7 +324,7 @@ static td_tap_t xtap_state = {
     .state = TD_NONE
 };
 
-void x_finished(tap_dance_state_t *state, void *user_data) {
+void layr_finished(tap_dance_state_t *state, void *user_data) {
     xtap_state.state = cur_dance(state);
     uint8_t curr_layer = get_highest_layer(layer_state);
     switch (xtap_state.state) {
@@ -345,21 +353,18 @@ void x_finished(tap_dance_state_t *state, void *user_data) {
     }
 }
 
-void x_reset(tap_dance_state_t *state, void *user_data) {
+void layr_reset(tap_dance_state_t *state, void *user_data) {
     switch (xtap_state.state) {
         case TD_SINGLE_HOLD:
             momentary_layer = false;
             layer_move(previous_layer);
-            if (previous_layer == _UTIL) {
-                layer_on(_NAV);
-            }
             break;
         default: break;
     }
     xtap_state.state = TD_NONE;
 }
 
-void mo_esc_finished(tap_dance_state_t *state, void *user_data) {
+void mesc_finished(tap_dance_state_t *state, void *user_data) {
     xtap_state.state = cur_dance(state);
     uint8_t curr_layer = get_highest_layer(layer_state);
     switch (xtap_state.state) {
@@ -379,22 +384,18 @@ void mo_esc_finished(tap_dance_state_t *state, void *user_data) {
             layer_move(_NAV);
             break;
         case TD_TRIPLE_TAP:
-            layer_on(_NAV);
-            layer_on(_UTIL);
+            layer_move(_UTIL);
             break;
         default:
             break;
     }
 }
 
-void mo_esc_reset(tap_dance_state_t *state, void *user_data) {
+void mesc_reset(tap_dance_state_t *state, void *user_data) {
     switch (xtap_state.state) {
         case TD_SINGLE_HOLD:
             momentary_layer = false;
             layer_move(previous_layer);
-            if (previous_layer == _UTIL) {
-                layer_on(_NAV);
-            }
             break;
         case TD_SINGLE_TAP:
             unregister_code(KC_ESC);
@@ -404,9 +405,48 @@ void mo_esc_reset(tap_dance_state_t *state, void *user_data) {
     xtap_state.state = TD_NONE;
 }
 
+void mf12_finished(tap_dance_state_t *state, void *user_data) {
+    xtap_state.state = cur_dance(state);
+    uint8_t curr_layer = get_highest_layer(layer_state);
+    switch (xtap_state.state) {
+        case TD_SINGLE_HOLD:
+            momentary_layer = true;
+            previous_layer = curr_layer;
+            if (curr_layer == _UTIL){
+                layer_move(_NAV);
+            } else {
+                layer_move(_UTIL);
+            }
+            break;
+        case TD_SINGLE_TAP:
+            register_code(KC_F12);
+            break;
+        case TD_DOUBLE_TAP:
+            layer_move(_UTIL);
+            break;
+        default:
+            break;
+    }
+}
+
+void mf12_reset(tap_dance_state_t *state, void *user_data) {
+    switch (xtap_state.state) {
+        case TD_SINGLE_HOLD:
+            momentary_layer = false;
+            layer_move(previous_layer);
+            break;
+        case TD_SINGLE_TAP:
+            unregister_code(KC_F12);
+            break;
+        default: break;
+    }
+    xtap_state.state = TD_NONE;
+}
+
 tap_dance_action_t tap_dance_actions[] = {
-    [TD_X_MO] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, x_finished, x_reset),
-    [TD_MO_ESC] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, mo_esc_finished, mo_esc_reset)
+    [TD_LAYR] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, layr_finished, layr_reset),
+    [TD_MESC] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, mesc_finished, mesc_reset),
+    [TD_MF12] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, mf12_finished, mf12_reset)
 };
 
 bool caps_word_press_user(uint16_t keycode) {
@@ -422,8 +462,9 @@ bool caps_word_press_user(uint16_t keycode) {
         case KC_DEL:
         case KC_MINS:
         case KC_UNDS:
-        case TD(TD_X_MO):
-        case TD(TD_MO_ESC):
+        case TD(TD_LAYR):
+        case TD(TD_MESC):
+        case TD(TD_MF12):
             return true;
 
         default:
