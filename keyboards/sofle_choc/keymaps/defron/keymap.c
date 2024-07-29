@@ -419,7 +419,7 @@ void mf12_finished(tap_dance_state_t *state, void *user_data) {
             }
             break;
         case TD_SINGLE_TAP:
-            if (!leader_active) {
+            if (!leader_active) { // don't send f12 during a leader key sequence
                 tap_code(KC_F12);
             }
             break;
