@@ -35,7 +35,7 @@ typedef struct {
 
 td_state_t cur_dance(tap_dance_state_t *state);
 
-// For the tap dance. Put it here so it can be used in any keymap
+// For the tap dances. Put it here so it can be used in any keymap
 void layr_finished(tap_dance_state_t *state, void *user_data);
 void layr_reset(tap_dance_state_t *state, void *user_data);
 void mesc_finished(tap_dance_state_t *state, void *user_data);
@@ -417,7 +417,9 @@ void mf12_finished(tap_dance_state_t *state, void *user_data) {
             }
             break;
         case TD_SINGLE_TAP:
-            register_code(KC_F12);
+            if (!leader_active) { // don't send f12 during a leader key sequence
+                tap_code(KC_F12);
+            }
             break;
         case TD_DOUBLE_TAP:
             layer_move(_UTIL);
@@ -432,9 +434,6 @@ void mf12_reset(tap_dance_state_t *state, void *user_data) {
         case TD_SINGLE_HOLD:
             momentary_layer = false;
             layer_move(previous_layer);
-            break;
-        case TD_SINGLE_TAP:
-            unregister_code(KC_F12);
             break;
         default: break;
     }

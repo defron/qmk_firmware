@@ -35,7 +35,7 @@ typedef struct {
 
 td_state_t cur_dance(tap_dance_state_t *state);
 
-// For the x tap dance. Put it here so it can be used in any keymap
+// For the tap dances. Put it here so it can be used in any keymap
 void layr_finished(tap_dance_state_t *state, void *user_data);
 void layr_reset(tap_dance_state_t *state, void *user_data);
 void mesc_finished(tap_dance_state_t *state, void *user_data);
@@ -164,7 +164,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             break;
         case K_MACL2:
             if (record->tap.count && record->event.pressed) {
-                mousekey_on(KC_ACL2); // accerlate mouse
+                mousekey_on(KC_ACL2); // fast mouse
                 return false;
             }
             break;
@@ -266,7 +266,7 @@ void leader_end_user(void) {
     } else if (leader_sequence_one_key(KC_V)) {
         // Leader, v => Ctrl + Shift + V
         SEND_STRING(SS_LCTL(SS_LSFT("v")));
-    } if (leader_sequence_one_key(TD(TD_MF12))) {
+    } else if (leader_sequence_one_key(TD(TD_MF12))) {
         // Leader, f12 => find all references
         SEND_STRING(SS_LSFT(SS_TAP(X_F12)));
     } else if (leader_sequence_one_key(KC_J)) {
