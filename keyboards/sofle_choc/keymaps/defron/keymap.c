@@ -419,7 +419,9 @@ void mf12_finished(tap_dance_state_t *state, void *user_data) {
             }
             break;
         case TD_SINGLE_TAP:
-            register_code(KC_F12);
+            if (!leader_active) {
+                tap_code(KC_F12);
+            }
             break;
         case TD_DOUBLE_TAP:
             layer_move(_UTIL);
@@ -434,9 +436,6 @@ void mf12_reset(tap_dance_state_t *state, void *user_data) {
         case TD_SINGLE_HOLD:
             momentary_layer = false;
             layer_move(previous_layer);
-            break;
-        case TD_SINGLE_TAP:
-            unregister_code(KC_F12);
             break;
         default: break;
     }
@@ -537,6 +536,13 @@ static void print_status_narrow(void) {
 
     const uint8_t mods = get_mods();
     const uint8_t o_s_mods = get_oneshot_mods();
+    static uint16_t last_sync = false;
+
+    if (momentary_layer) {
+        oled_write_ln_P(PSTR("MO:"), false);
+    } else {
+        oled_write_ln_P(PSTR(" "), false);
+    }
 
     switch (get_highest_layer(layer_state)) {
         case _QWERTY:
@@ -586,7 +592,14 @@ static void print_status_narrow(void) {
     }
     oled_write_P(PSTR("\n"), false);
     oled_write_ln_P(PSTR("WPM:"), false);
-    oled_write(get_u8_str(get_current_wpm(), ' '), false);
+    if (timer_elapsed32(last_sync) > 250) {
+        if(get_current_wpm() > 9) {
+            oled_write(get_u8_str(get_current_wpm(), ' '), false);
+        } else {
+            oled_write_ln_P(PSTR(" "), false);
+        }
+        last_sync = timer_read32();
+    }
 }
 
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
