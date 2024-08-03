@@ -301,17 +301,10 @@ __attribute__((weak)) bool achordion_chord(uint16_t tap_hold_keycode,
                                            keyrecord_t* other_record) {
   switch (tap_hold_keycode) {
     case RCTL_T(KC_J):
-        if (other_keycode == RALT_T(KC_L) || other_keycode == KC_L) { return true; }
+        if (other_keycode == RALT_T(KC_L) || other_keycode == KC_L || other_keycode == KC_P) { return true; }
         break;
-    case LCTL_T(QK_REP):
-    case LCTL_T(QK_AREP):
-    case RSFT_T(KC_ENT):
-    case LCTL_T(KC_ACL2):
-    case LSFT_T(KC_ACL1):
-    case LALT_T(KC_ACL0):
-    case RGUI_T(KC_SCLN):
-        return true;
   }
+  if (other_keycode > KC_Z) { return true; }
 
   // Otherwise, follow the opposite hands rule.
   return achordion_opposite_hands(tap_hold_record, other_record);
@@ -319,7 +312,17 @@ __attribute__((weak)) bool achordion_chord(uint16_t tap_hold_keycode,
 
 // By default, the timeout is 1000 ms for all keys.
 __attribute__((weak)) uint16_t achordion_timeout(uint16_t tap_hold_keycode) {
-  return 1000;
+    switch (tap_hold_keycode) {
+        case LCTL_T(QK_REP):
+        case LCTL_T(QK_AREP):
+        case RSFT_T(KC_ENT):
+        case LCTL_T(KC_ACL2):
+        case LSFT_T(KC_ACL1):
+        case LALT_T(KC_ACL0):
+        case RGUI_T(KC_SCLN):
+            return 0;
+    }
+    return 800;
 }
 
 // By default, Shift and Ctrl mods are eager, and Alt and GUI are not.

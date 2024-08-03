@@ -203,11 +203,11 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
         case MLCTL_F:
         case MRALT_L:
         case MLALT_S:
-        case M_GUISC:
             return 230;
         case TD(TD_MESC):
         case TD(TD_LAYR):
             return 300;
+        case M_GUISC:
         case KC_LSFT:
         case TD(TD_MF12):
             return 250;
@@ -242,7 +242,7 @@ bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
         case K_MACL2:
         case K_MACL1:
         case K_MACL0:
-        case M_GUISC:
+        case MRCTL_J:
             // Immediately select the hold action when another key is tapped.
             return true;
         default:
@@ -459,8 +459,6 @@ bool caps_word_press_user(uint16_t keycode) {
         case KC_1 ... KC_0:
         case KC_BSPC:
         case KC_DEL:
-        case KC_MINS:
-        case KC_UNDS:
         case TD(TD_LAYR):
         case TD(TD_MESC):
         case TD(TD_MF12):
